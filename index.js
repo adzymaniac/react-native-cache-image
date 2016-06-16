@@ -5,14 +5,14 @@
 * @flow-weak
 */
 'use strict';
-var React = require('react-native');
+import React from 'react';
 
-var {
+import {
     View,
     Image,
     Text,
     StyleSheet,
-} = React;
+} from 'react-native';
 
 
 var md5 = require("./md5.js");
@@ -175,7 +175,7 @@ var CacheImage = React.createClass({
     },
     downloadImage(url, filepath, cacheId, filename) {
         var self = this;
-        var ret =  fs.downloadFile(url, filepath).then(async (res)=>{
+        var ret =  fs.downloadFile({fromUrl: url, toFile: filepath}).then(async (res)=>{
             self.setState({
                 status:STATUS_LOADED,
                 source:{uri:'file://'+filepath},
@@ -246,6 +246,15 @@ var CacheImage = React.createClass({
             return;
         }
         cacheIdMgr[cacheId] = true;
+        if (!url) return;
+        this.setState({status:STATUS_LOADING});
+        this.checkImageSource(cacheId, url);
+    },
+    componentWillReceiveProps(props)
+    {
+        var {cacheId, url} = props;
+        if (!url) return;
+        if (this.props.cacheId === cacheId && this.props.url === url) return;
         this.setState({status:STATUS_LOADING});
         this.checkImageSource(cacheId, url);
     },
