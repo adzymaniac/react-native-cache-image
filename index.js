@@ -37,7 +37,6 @@ STATUS_UNLOADED = 3;
 var storageMgr = new StorageMgr();
 var db = StorageMgr.db;
 var syncImageSource = {};
-var cacheIdMgr = {};
 
 var CacheImage = React.createClass({
     mixins: [TimerMixin],
@@ -241,11 +240,6 @@ var CacheImage = React.createClass({
     },
     componentWillMount() {
         var {cacheId, url} = this.props;
-        if (cacheIdMgr[cacheId]) {
-            console.error('duplicate cacheId');
-            return;
-        }
-        cacheIdMgr[cacheId] = true;
         if (!url) return;
         this.setState({status:STATUS_LOADING});
         this.checkImageSource(cacheId, url);
@@ -257,9 +251,6 @@ var CacheImage = React.createClass({
         if (this.props.cacheId === cacheId && this.props.url === url) return;
         this.setState({status:STATUS_LOADING});
         this.checkImageSource(cacheId, url);
-    },
-    componentWillUnmount: function() {
-        delete cacheIdMgr[this.props.cacheId];
     },
     renderLoading() {
         return (
