@@ -175,6 +175,14 @@ var CacheImage = React.createClass({
     downloadImage(url, filepath, cacheId, filename) {
         var self = this;
         var ret =  fs.downloadFile({fromUrl: url, toFile: filepath}).then(async (res)=>{
+            if (this.unmounted)
+            {
+                // It is possible for the component to be off loaded
+                // while we were downloading.
+                console.log('CacheImage downloadImage | returning as the component was off-loaded');
+                this.unlock();
+                return;
+            }
             self.setState({
                 status:STATUS_LOADED,
                 source:{uri:'file://'+filepath},
@@ -220,6 +228,14 @@ var CacheImage = React.createClass({
         var {cacheId, url, filename, filepath} = this.param;
         this.lock();
         var isExist = await this.isFileExist(filepath);
+        if (this.unmounted)
+        {
+            // It is possible for the component to be off loaded
+            // while we were checking the database.
+            console.log('CacheImage doCheckImageSource | returning as the component was off-loaded');
+            this.unlock();
+            return;
+        }
         //console.log(this.param);
         //console.log('Is File exist', isExist);
         if (isExist) {
@@ -251,6 +267,10 @@ var CacheImage = React.createClass({
         if (this.props.cacheId === cacheId && this.props.url === url) return;
         this.setState({status:STATUS_LOADING});
         this.checkImageSource(cacheId, url);
+    },
+    componentWillUnmount()
+    {
+        this.unmounted = true;
     },
     renderLoading() {
         return (
