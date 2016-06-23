@@ -256,14 +256,22 @@ var CacheImage = React.createClass({
     },
     componentWillMount() {
         var {cacheId, url} = this.props;
-        if (!url) return;
+        if (!url)
+        {
+            this.setState(this.getInitialState());
+            return;
+        }
         this.setState({status:STATUS_LOADING});
         this.checkImageSource(cacheId, url);
     },
     componentWillReceiveProps(props)
     {
         var {cacheId, url} = props;
-        if (!url) return;
+        if (!url)
+        {
+            this.setState(this.getInitialState());
+            return;
+        }
         if (this.props.cacheId === cacheId && this.props.url === url) return;
         this.setState({status:STATUS_LOADING});
         this.checkImageSource(cacheId, url);
