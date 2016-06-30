@@ -330,6 +330,13 @@ var CacheImage = React.createClass({
 CacheImage.clear = storageMgr.clear;
 module.exports = CacheImage;
 
+module.exports.hasLocalPath = function hasLocalPath(url) {
+    var type = url.replace(/.*\.(.*)/, '$1');
+    var filename =  md5(url)+'.'+type;
+    var filepath = storageMgr.getCacheFilePath(filename);
+    return filepath;
+}
+
 var styles = StyleSheet.create({
   spinner: {
     alignItems: 'center',
