@@ -330,12 +330,18 @@ var CacheImage = React.createClass({
 CacheImage.clear = storageMgr.clear;
 module.exports = CacheImage;
 
-module.exports.hasLocalPath = function hasLocalPath(url) {
-    var type = url.replace(/.*\.(.*)/, '$1');
-    var filename =  md5(url)+'.'+type;
-    var filepath = storageMgr.getCacheFilePath(filename);
-    return filepath;
-}
+module.exports.hasLocalFile = function hasLocalFile(url) {
+    const type = url.replace(/.*\.(.*)/, '$1');
+    const filename =  md5(url)+'.'+type;
+    const filepath = storageMgr.getCacheFilePath(filename);
+    return new Promise((resolve, reject) => {
+        fs.stat(filepath).then((rs) => {
+            resolve(true);
+        }).catch((err) => {
+            resolve(false);
+        });
+    });
+};
 
 var styles = StyleSheet.create({
   spinner: {
